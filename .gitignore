@@ -1,0 +1,8 @@
+
+*.swp
+
+src/caca
+
+src/caca.hi
+
+src/caca.o

@@ -1,13 +1,22 @@
+import Data.IORef
+import System.IO.Unsafe (unsafePerformIO)
 {-# LANGUAGE DatatypeContexts #-}
 
-data (Ord a, Eq a) => Arbol a = Nada | Nodo (Arbol a) (Arbol a) (Arbol a) a a
-	deriving Show
+-- data (Ord a, Eq a) => Arbol a = Nada | Nodo (IORef (Arbol a)) (Arbol a) (Arbol a) a a
+-- 	deriving Show
 
-insertar :: (Ord a) => Arbol a -> a -> a -> Arbol a
-insertar Nada x idx = Nodo Nada Nada Nada x idx
+-- data Arbol= Nodo{padre :: IO (IORef Arbol), hi:: Arbol, hdp:: Arbol, val :: Int, idx :: Int} | Nada
+data Arbol= Nodo{ padre::Arbol, hi:: Arbol, hdp:: Arbol, val :: Int, idx :: Int} | Nada
+
+instance Show (IORef a) where
+    show _ = "<ioref>"
+
+insertar ::  Arbol -> Int -> Int -> Arbol 
+insertar Nada x idx = (Nodo Nada Nada Nada x idx)
+--insertar Nada x idx = (Nodo (newIORef Nada) Nada Nada x idx)
 insertar raiz@(Nodo padre t1 t2 v idx_padre) x idx = insertar_nodo raiz raiz x idx
 
-insertar_nodo :: (Ord a) => Arbol a -> Arbol a -> a -> a -> Arbol a
+insertar_nodo :: Arbol  -> Arbol  -> Int -> Int -> Arbol 
 insertar_nodo raiz Nada x idx = Nodo Nada raiz Nada x idx
 insertar_nodo raiz actual@(Nodo padre t1 t2 v idx_padre) x idx
 	| x < v = Nodo (insertar_nodo raiz padre x idx) t1 t2 v idx_padre
@@ -16,9 +25,9 @@ insertar_nodo raiz actual@(Nodo padre t1 t2 v idx_padre) x idx
 					      padre_nuevo = Nodo padre t1 nodo_nuevo v idx_padre
 					  in nodo_nuevo
 
-caca_construye_arbol :: (Ord a) => [a] -> Arbol a -> a -> Arbol a
+caca_construye_arbol :: [Int] -> Arbol  -> Int -> Arbol 
 caca_construye_arbol [] arbolin idx = arbolin
-caca_construye_arbol x:xs arbolin idx = caca_construye_arbol xs insertar arbolin x idx idx+1
+caca_construye_arbol (x:xs) arbolin idx = caca_construye_arbol xs (insertar arbolin x idx) (idx+1)
 
 caca_main :: a -> Int
 caca_main _ = 1

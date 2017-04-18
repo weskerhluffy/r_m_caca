@@ -6,3 +6,9 @@ src/caca
 src/caca.hi
 
 src/caca.o
+
+src/ass.hi
+
+src/ass
+
+*.o

@@ -9,9 +9,6 @@ data Arbol a = Nada | Nodo (Arbol a) (Arbol a) (Arbol a) a a
 --data Arbol= Nodo{padre :: Arbol, hi:: Arbol, hdp:: IORef Arbol, val :: Int, idx :: Int} | Nada
 -- data Arbol= Nodo{ padre::Arbol, hi:: Arbol, hdp:: Arbol, val :: Int, idx :: Int} | Nada
 
-instance Show (IORef a) where
-    show _ = "<ioref>"
-
 insertar :: (Ord a) => Arbol a -> a -> a -> Arbol a
 insertar Nada x idx = let caca = (Nodo Nada Nada Nada x idx)
                       in caca
@@ -36,6 +33,7 @@ insertar_nodo actual@(Nodo padre t1 t2 v idx_padre) anterior@(Nodo padre_ant hi_
 	                                      t2_ref = unsafePerformIO(newIORef t2)
 					      caca1 = writeIORef t2_ref nodo_nuevo
 					  in nodo_nuevo
+insertar_nodo _ _ _ _ = Nada
 
 --    let ass = (Nodo padre Nada Nada x idx)
 --        goodbye = unsafePerformIO(newIORef padre_ant)
@@ -52,11 +50,12 @@ insertar_nodo actual@(Nodo padre t1 t2 v idx_padre) anterior@(Nodo padre_ant hi_
 --    return (Nodo men men men 0 0)
 
 --
---caca_construye_arbol :: [Int] -> Arbol  -> Int -> Arbol 
---caca_construye_arbol [] arbolin idx = arbolin
---caca_construye_arbol (x:xs) arbolin idx = caca_construye_arbol xs (insertar arbolin x idx) (idx+1)
+caca_construye_arbol :: (Ord a, Num a) => [a] -> Arbol a -> a -> Arbol a
+caca_construye_arbol [] arbolin idx = arbolin
+caca_construye_arbol (x:xs) arbolin idx = caca_construye_arbol xs (insertar arbolin x idx) (idx+1)
 
 --caca_main :: a -> Int
 --caca_main _ = 1
-
-main = putStrLn "Hello, World!"
+main = do
+    let ass=(caca_construye_arbol [3,2,1] Nada 0)
+    print ("ass "++(show ass))

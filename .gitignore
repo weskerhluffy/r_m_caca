@@ -12,3 +12,7 @@ src/ass.hi
 src/ass
 
 *.o
+
+src/cagada
+
+src/cagada.hi

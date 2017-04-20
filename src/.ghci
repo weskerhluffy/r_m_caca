@@ -1,0 +1,14 @@
+:load caca
+:break 22
+:break 23
+:break 24
+:break 25
+:break 26
+:break 27
+:break 28
+:break 29
+:break 35
+:break 36
+shit=(insertar Nada 10 0)
+aaa=(insertar_nodo shit Nada 20 1)
+-- bbb=(insertar_nodo aaa Nada 30 2)

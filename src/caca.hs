@@ -6,15 +6,19 @@
 -- XXX: https://news.ycombinator.com/item?id=1831403
 -- XXX: http://stackoverflow.com/questions/8332307/show-for-io-types
 {-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 import Data.IORef
 import System.IO.Unsafe (unsafePerformIO)
+import qualified Data.Map as M
+import Data.Maybe
 
 data Arbol a = Nada | Nodo (IORef (Arbol a)) (IORef (Arbol a)) (IORef (Arbol a)) a a deriving Show
--- data Arbol= Nodo{ padre::IORef s Arbol, hi:: IORef Arbol, hdp:: IORef Arbol, val :: Int, idx :: Int} | Nada deriving Show
 
 instance Show (IORef a) where
     show _ = "<ioref>"
---data Arbol= Nodo{padre :: Arbol, hi:: Arbol, hdp:: IORef Arbol, val :: Int, idx :: Int} | Nada
+
+caca_genera_mapa:: M.Map Int (Arbol a)
+caca_genera_mapa = M.fromList $ zip [100000000] [Nada]
 
 insertar :: (Ord a) => Arbol a-> a -> a -> Arbol a
 insertar Nada x idx = unsafePerformIO $ do
@@ -24,7 +28,6 @@ insertar Nada x idx = unsafePerformIO $ do
     return (Nodo (mierda1) (mierda2) (mierda3) x idx)
 insertar ultimo_insertado@(Nodo padre t1 t2 v idx_padre) x idx = unsafePerformIO $ do
     let mierda=((insertar_nodo ultimo_insertado Nada x idx))
---    mierda<-((insertar_nodo ultimo_insertado Nada x idx))
     return mierda
 
 insertar_nodo :: (Ord a) => Arbol a -> Arbol a-> a -> a -> Arbol a
@@ -59,39 +62,32 @@ insertar_nodo !actual@(Nodo !padre t1 t2 v idx_padre) !anterior x idx
                                                                       return nodo_nuevo
 insertar_nodo _ _ _ _ = Nada
 
---    let ass = (Nodo padre Nada Nada x idx)
---        goodbye = unsafePerformIO(newIORef padre_ant)
---        ad = writeIORef goodbye anterior
---    in ass
-
---insertar_nodo :: Arbol -> Arbol -> Int -> Int -> Arbol 
---insertar_nodo Nada anterior x idx = do
---    men <- newIORef Nada
---    return (Nodo men anterior men x idx)
---insertar_nodo actual@(Nodo padre t1 t2 v idx_padre) anterior@(Nodo padre_ant hi_ant hdp_ant v_ant idx_ant) x idx = do
---insertar_nodo actual@(Nodo padre t1 t2 v idx_padre) anterior x idx = do
---    men <- newIORef Nada
---    return (Nodo men men men 0 0)
-
---
-caca_construye_arbol :: (Ord a, Num a) => [a] -> Arbol a -> a -> Arbol a
-caca_construye_arbol [] arbolin idx = arbolin
-caca_construye_arbol (x:xs) !arbolin idx = caca_construye_arbol xs (insertar arbolin x idx) (idx+1)
+caca_construye_arbol :: (Ord a, Num a) => [a] -> Arbol a -> a ->  M.Map a (Arbol a) -> Arbol a
+caca_construye_arbol [] arbolin idx _= arbolin
+caca_construye_arbol (x:xs) !arbolin idx maputo = let ultimo=(insertar arbolin x idx)
+                                                      chiga=M.insert x ultimo maputo
+                                                      in caca_construye_arbol xs ultimo (idx+1) maputo
 
 encuentra_raiz :: (Ord a) => Arbol a -> Arbol a
 encuentra_raiz Nada = Nada
 encuentra_raiz !actual@(Nodo padre _ _ x idx) = let padre_cont = unsafePerformIO(readIORef(padre))
-                                               in case padre_cont of Nada -> actual
-                                                                     padre_cont ->encuentra_raiz padre_cont
+                                                in case padre_cont of Nada -> actual
+                                                                      padre_cont ->encuentra_raiz padre_cont
 
 inorder :: (Ord c, Num c) => Arbol c -> c -> [(c,c,c)]
 inorder Nada _ = []
 inorder (Nodo _ hi hdp x idx) derp = (inorder (unsafePerformIO(readIORef(hi))) (derp+1)) ++ [(x,idx,derp)] ++ (inorder (unsafePerformIO(readIORef(hdp))) (derp+1))
 
---caca_main :: a -> Int
---caca_main _ = 1
-main = do
-    let ass=(caca_construye_arbol [50,3,8,7,45,3,56,335,4232,24] Nada 0)
+caca_main :: IO()
+caca_main = do
+    let maputo = caca_genera_mapa
+        ass=(caca_construye_arbol [50,8,7,45,3,56,3,335,4232,24] Nada 0 maputo)
         raiz=encuentra_raiz ass
     print ("ass "++(show ass)++" i la raiz "++(show raiz))
     print ("fuc "++ (show (inorder raiz 0)))
+    let tu::(Arbol Int)=fromJust(M.lookup 0 maputo)
+    print ("wes una "++(show tu))
+
+main = do
+    print "unas voi"
+    caca_main

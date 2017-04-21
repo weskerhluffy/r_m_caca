@@ -80,12 +80,13 @@ caca_construye_arbol (x:xs) !arbolin idx = caca_construye_arbol xs (insertar arb
 
 encuentra_raiz :: (Ord a) => Arbol a -> Arbol a
 encuentra_raiz Nada = Nada
-encuentra_raiz actual@(Nodo padre _ _ x idx) = let padre_cont = unsafePerformIO(readIORef(padre))
+encuentra_raiz !actual@(Nodo padre _ _ x idx) = let padre_cont = unsafePerformIO(readIORef(padre))
                                                in case padre_cont of Nada -> actual
                                                                      padre_cont ->encuentra_raiz padre_cont
-inorder :: (Ord a) => Arbol a -> [(a,a)]
-inorder Nada = []
-inorder (Nodo _ hi hdp x idx) = (inorder (unsafePerformIO(readIORef(hi)))) ++ [(x,idx)] ++ (inorder (unsafePerformIO(readIORef(hdp))))
+
+inorder :: (Ord c, Num c) => Arbol c -> c -> [(c,c,c)]
+inorder Nada _ = []
+inorder (Nodo _ hi hdp x idx) derp = (inorder (unsafePerformIO(readIORef(hi))) (derp+1)) ++ [(x,idx,derp)] ++ (inorder (unsafePerformIO(readIORef(hdp))) (derp+1))
 
 --caca_main :: a -> Int
 --caca_main _ = 1
@@ -93,4 +94,4 @@ main = do
     let ass=(caca_construye_arbol [50,3,8,7,45,3,56,335,4232,24] Nada 0)
         raiz=encuentra_raiz ass
     print ("ass "++(show ass)++" i la raiz "++(show raiz))
-    print ("fuc "++ (show (inorder raiz)))
+    print ("fuc "++ (show (inorder raiz 0)))

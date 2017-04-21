@@ -1,3 +1,10 @@
+-- XXX: https://mail.haskell.org/pipermail/beginners/2012-April/009743.html
+-- XXX: https://en.wikibooks.org/wiki/Haskell/Mutable_objects
+-- XXX: http://wiki.c2.com/?HaskellExampleForMutabilityOnObjects
+-- XXX: http://stackoverflow.com/questions/4418017/haskell-new-instance-declaration-for-show
+-- XXX: http://blog.jakubarnold.cz/2014/07/20/mutable-state-in-haskell.html
+-- XXX: https://news.ycombinator.com/item?id=1831403
+-- XXX: http://stackoverflow.com/questions/8332307/show-for-io-types
 {-# LANGUAGE BangPatterns #-}
 import Data.IORef
 import System.IO.Unsafe (unsafePerformIO)
@@ -76,10 +83,14 @@ encuentra_raiz Nada = Nada
 encuentra_raiz actual@(Nodo padre _ _ x idx) = let padre_cont = unsafePerformIO(readIORef(padre))
                                                in case padre_cont of Nada -> actual
                                                                      padre_cont ->encuentra_raiz padre_cont
+inorder :: (Ord a) => Arbol a -> [(a,a)]
+inorder Nada = []
+inorder (Nodo _ hi hdp x idx) = (inorder (unsafePerformIO(readIORef(hi)))) ++ [(x,idx)] ++ (inorder (unsafePerformIO(readIORef(hdp))))
 
 --caca_main :: a -> Int
 --caca_main _ = 1
 main = do
-    let ass=(caca_construye_arbol [3,1,2] Nada 0)
+    let ass=(caca_construye_arbol [50,3,8,7,45,3,56,335,4232,24] Nada 0)
         raiz=encuentra_raiz ass
     print ("ass "++(show ass)++" i la raiz "++(show raiz))
+    print ("fuc "++ (show (inorder raiz)))

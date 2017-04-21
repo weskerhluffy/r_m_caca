@@ -16,3 +16,5 @@ src/ass
 src/cagada
 
 src/cagada.hi
+
+*.swo

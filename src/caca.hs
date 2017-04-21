@@ -1,9 +1,4 @@
--- {-# LANGUAGE DatatypeContexts #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE BangPatterns #-}
-{-# LANGUAGE PartialTypeSignatures #-}
-{-# LANGUAGE NamedWildCards #-}
-{-# LANGUAGE TypeOperators #-}
 import Data.IORef
 import System.IO.Unsafe (unsafePerformIO)
 

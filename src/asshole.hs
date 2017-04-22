@@ -26,22 +26,50 @@ aboveThresholdST radio run = do
                  Just x -> True
   return result
 
-assshit :: HT.HashTable s String Score -> String -> Int-> ST s Int
+assshit :: ScoreCaca s-> String -> Int-> ST s Int
 assshit ht cadena valor = do 
     HT.insert ht cadena valor
     return 1
 
 mierda :: Bool
-mierda = runST $ do
+mierda =  runST$do
 --    maputo<-scores
     let maputo=scores
+    maputo1<-(maputo)
     aaa<-aboveThresholdST ((maputo)) "run1"
-    let maputo1=runST(maputo)
+    aaa1 <- HT.lookup maputo1 "run1"
+    let aaa = case aaa1 of
+                      Nothing -> False
+                      Just x -> True
+--    let maputo1=(maputo)
     HT.insert maputo1 "run4" 456
+
     bbb<-aboveThresholdST maputo "run4"
-    assshit maputo "run5" 678
+    bbb1 <- HT.lookup maputo1 "run4"
+    let bbb= case bbb1 of
+                      Nothing -> False
+                      Just x -> True
+
+    assshit maputo1 "run5" 678
+
     ccc<-aboveThresholdST maputo "run5"
-    return True
+    ccc1 <- HT.lookup maputo1 "run5"
+    let ccc= case ccc1 of
+                      Nothing -> False
+                      Just x -> True
+
+    assshit maputo1 "run6" 678
+
+    ccc1 <- HT.lookup maputo1 "run6"
+    let ccc= case ccc1 of
+                      Nothing -> False
+                      Just x -> True
+
+--    let resu=(aaa&&bbb)&&ccc
+    let resu=ccc
+    return resu
 
 main = do
     print "oi"
+    let puta=mierda
+    print ("vide kill "++(show puta))

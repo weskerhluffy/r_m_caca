@@ -18,3 +18,7 @@ src/cagada
 src/cagada.hi
 
 *.swo
+
+*.hi
+
+src/asshole

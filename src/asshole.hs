@@ -1,11 +1,11 @@
-module Lookup
-where
-
-import Control.Monad.ST.Safe
+import Control.Monad.ST
+import Control.Monad
+import Data.STRef
 import qualified Data.HashTable.ST.Basic as HT
 
 type Score = Int
-type Scores s = ST s (HT.HashTable s String Score)
+type ScoreCaca s = HT.HashTable s String Score
+type Scores s = ST s (ScoreCaca s)
 
 threshold = 100 :: Int
 
@@ -18,36 +18,30 @@ scores = do
   return ht
 
 aboveThresholdST :: Scores s -> String -> ST s Bool
-aboveThresholdST scores run = do
-  ht <- scores
+aboveThresholdST radio run = do
+  ht <- radio 
   cnt <- HT.lookup ht run
   let result = case cnt of
                  Nothing -> False
-                 Just x -> (x > threshold)
+                 Just x -> True
   return result
 
--- Question #1 is this possible?? i.e. escape the ST s Bool result above?
--- Say by some sort of application of runST that I cannot get to work?
-aboveThreshold :: Scores s -> String -> Bool
-aboveThreshold scores run = undefined
+assshit :: HT.HashTable s String Score -> String -> Int-> ST s Int
+assshit ht cadena valor = do 
+    HT.insert ht cadena valor
+    return 1
 
--- Question #2 What I' really like to do, as an example, is use the Scores hashtable to do a simple filter.
--- e.g., filterAboveThreshold scores ["run1","run2","run3"] => ["run1","run2"]
-filterAboveThreshold :: Scores s -> [String] -> [String]
-filterAboveThreshold scores runs = undefined
+mierda :: Bool
+mierda = runST $ do
+--    maputo<-scores
+    let maputo=scores
+    aaa<-aboveThresholdST ((maputo)) "run1"
+    let maputo1=runST(maputo)
+    HT.insert maputo1 "run4" 456
+    bbb<-aboveThresholdST maputo "run4"
+    assshit maputo "run5" 678
+    ccc<-aboveThresholdST maputo "run5"
+    return True
 
--- I know I can always get to IO and write a 
--- filterAboveThreshold :: Scores s -> [String] -> IO [String] 
--- Is that the best one can do here?  Is there any stipulation of 's' besided 'RealWord' feasible?
-aboveThresholdIO :: Scores RealWorld -> String -> IO Bool
-aboveThresholdIO scores run = do
-    let result = do
-          ht <- scores
-          cnt <- HT.lookup ht run
-          return $ case cnt of
-                     Nothing -> False
-                     Just x -> (x > threshold)
-    rs <- stToIO result
-    return rs
-
-main = print "oi"
+main = do
+    print "oi"

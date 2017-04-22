@@ -17,9 +17,9 @@ scores = do
   HT.insert ht "run3" 98
   return ht
 
-aboveThresholdST :: Scores s -> String -> ST s Bool
+aboveThresholdST :: ScoreCaca s -> String -> ST s Bool
 aboveThresholdST radio run = do
-  ht <- radio 
+  let ht = radio 
   cnt <- HT.lookup ht run
   let result = case cnt of
                  Nothing -> False
@@ -33,40 +33,31 @@ assshit ht cadena valor = do
 
 mierda :: Bool
 mierda =  runST$do
---    maputo<-scores
-    let maputo=scores
-    maputo1<-(maputo)
-    aaa<-aboveThresholdST ((maputo)) "run1"
-    aaa1 <- HT.lookup maputo1 "run1"
-    let aaa = case aaa1 of
-                      Nothing -> False
-                      Just x -> True
+    maputo<-scores
+--    let maputo=scores
+--    maputo1<-(maputo)
+    aaa<-aboveThresholdST maputo "run1"
+--    aaa1 <- HT.lookup maputo "run1"
+--    let aaa = case aaa1 of
+--                      Nothing -> False
+--                      Just x -> True
 --    let maputo1=(maputo)
-    HT.insert maputo1 "run4" 456
+    HT.insert maputo "run4" 456
 
     bbb<-aboveThresholdST maputo "run4"
-    bbb1 <- HT.lookup maputo1 "run4"
-    let bbb= case bbb1 of
-                      Nothing -> False
-                      Just x -> True
+--    bbb1 <- HT.lookup maputo "run4"
 
-    assshit maputo1 "run5" 678
+    assshit maputo "run5" 678
 
     ccc<-aboveThresholdST maputo "run5"
-    ccc1 <- HT.lookup maputo1 "run5"
-    let ccc= case ccc1 of
-                      Nothing -> False
-                      Just x -> True
+--    ccc1 <- HT.lookup maputo "run5"
 
-    assshit maputo1 "run6" 678
+    assshit maputo "run6" 678
 
-    ccc1 <- HT.lookup maputo1 "run6"
-    let ccc= case ccc1 of
-                      Nothing -> False
-                      Just x -> True
+    ddd<-aboveThresholdST maputo "run6"
+--    ddd1 <- HT.lookup maputo "run6"
 
---    let resu=(aaa&&bbb)&&ccc
-    let resu=ccc
+    let resu=((aaa&&bbb)&&ccc)&&ddd
     return resu
 
 main = do

@@ -22,3 +22,7 @@ src/cagada.hi
 *.hi
 
 src/asshole
+
+src/asshole1
+
+src/asshole1.hs

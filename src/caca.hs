@@ -6,6 +6,7 @@
 -- XXX: https://news.ycombinator.com/item?id=1831403
 -- XXX: http://stackoverflow.com/questions/8332307/show-for-io-types
 {-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 import Data.IORef
 import System.IO.Unsafe (unsafePerformIO)

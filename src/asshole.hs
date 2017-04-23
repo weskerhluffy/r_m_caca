@@ -100,17 +100,17 @@ mierda =  runST$do
 --                      Nothing -> False
 --                      Just x -> True
 --    let maputo1=(maputo)
-    HT.insert maputo 4 Nada
+    HT.insert maputo 4 arbol4
 
     bbb<-aboveThresholdST maputo 4
 --    bbb1 <- HT.lookup maputo "run4"
 
-    assshit maputo 5 Nada
+    assshit maputo 5 arbol5
 
     ccc<-aboveThresholdST maputo 5
 --    ccc1 <- HT.lookup maputo "run5"
 
-    assshit maputo 6 Nada
+    assshit maputo 6 arbol6
 
     ddd<-aboveThresholdST maputo 6
 --    ddd1 <- HT.lookup maputo "run6"

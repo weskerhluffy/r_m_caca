@@ -84,10 +84,16 @@ caca_construye_arbol (x:xs) !arbolin idx maputo = do
     return putamierda
 
 encuentra_raiz :: (Ord a) => Arbol a -> Arbol a
-encuentra_raiz Nada = Nada
+encuentra_raiz Nada = Nada 
 encuentra_raiz !actual@(Nodo padre _ _ x idx) = let padre_cont = unsafePerformIO(readIORef(padre))
                                                 in case padre_cont of Nada -> actual
                                                                       padre_cont ->encuentra_raiz padre_cont
+                                                                      
+camino_raiz:: (Ord a) => Arbol a -> [a]
+camino_raiz Nada = [] 
+camino_raiz !actual@(Nodo padre _ _ x idx) = let padre_cont = unsafePerformIO(readIORef(padre))
+                                                in case padre_cont of Nada -> [x]
+                                                                      padre_cont ->[x]++(camino_raiz padre_cont)
 
 inorder :: (Ord c, Num c) => Arbol c -> c -> [(c,c,c)]
 inorder Nada _ = []
@@ -102,11 +108,15 @@ caca_main = runST$do
         !caca=print ("ass "++(show ass)++" i la raiz "++(show raiz))
         !caca1= print ("fuc "++ (show (inorder raiz 0)))
     resu_mierda<-(M.lookup maputo 3)
---    tu::(Arbol In)<-fromJust(resu_mierda)
     let tu::(Arbol Int)=fromJust(resu_mierda)
     let !caca2=print("wes una "++(show tu))
     let assbutt = case tu of Nada -> False
                              (Nodo _ _ _ _ _)->True
+                             
+    resu_mierda<-(M.lookup maputo 7)
+    let tu1::(Arbol Int)=fromJust(resu_mierda)
+    let camino=camino_raiz tu
+        camino1=camino_raiz tu1
     return tu
 
 

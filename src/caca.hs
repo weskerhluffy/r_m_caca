@@ -48,6 +48,7 @@ insertar_nodo Nada !anterior@(Nodo padre_ant hi_ant hdp_ant v_ant idx_ant) x idx
     mierda3<-newIORef Nada
     mierda4<-newIORef anterior
     let ass = (Nodo mierda1 mierda4 mierda2 x idx)
+    writeIORef padre_ant ass
     return ass
 insertar_nodo !actual@(Nodo !padre t1 t2 v idx_padre) !anterior x idx
     | x < v = unsafePerformIO $ do padre_ref<-readIORef(padre)
@@ -94,7 +95,7 @@ camino_raiz:: (Ord a) => Arbol a -> [a]
 camino_raiz Nada = [] 
 camino_raiz !actual@(Nodo padre _ _ x idx) = let padre_cont = unsafePerformIO(readIORef(padre))
                                                 in case padre_cont of Nada -> [x]
-                                                                      padre_cont ->[x]++(camino_raiz padre_cont)
+                                                                      padre_cont ->(camino_raiz padre_cont)++[x]
 
 inorder :: (Ord c, Num c) => Arbol c -> c -> [(c,c,c)]
 inorder Nada _ = []
@@ -104,22 +105,22 @@ caca_main :: Int
 caca_main = runST$do
     !maputo<-caca_genera_mapa::(MapaArbolins s Int)
     M.insert maputo 10000 Nada
-    ass<-(caca_construye_arbol [50,8,7,45,3,56,3,335,4232,24] Nada 0 maputo)
+    ass<-(caca_construye_arbol [50,8,7,45,3,56,12,335,43,24,4232,432] Nada 0 maputo)
     let raiz=encuentra_raiz ass
         !caca=print ("ass "++(show ass)++" i la raiz "++(show raiz))
         !caca1= print ("fuc "++ (show (inorder raiz 0)))
-    resu_mierda<-(M.lookup maputo 3)
+    resu_mierda<-(M.lookup maputo 6)
     let tu::(Arbol Int)=fromJust(resu_mierda)
     let !caca2=print("wes una "++(show tu))
     let assbutt = case tu of Nada -> False
                              (Nodo _ _ _ _ _)->True
-                             
-    resu_mierda<-(M.lookup maputo 7)
+    resu_mierda<-(M.lookup maputo 11)
     let tu1::(Arbol Int)=fromJust(resu_mierda)
     let camino=camino_raiz tu
         camino1=camino_raiz tu1
     let aaa=last(camino `intersect` camino1)
     return aaa
+
 
 
 main = do

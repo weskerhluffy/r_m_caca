@@ -10,16 +10,25 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 import Data.IORef
 import System.IO.Unsafe (unsafePerformIO)
-import qualified Data.Map as M
 import Data.Maybe
+import Control.Monad.ST
+import Control.Monad
+import Data.STRef
+import qualified Data.HashTable.ST.Basic as M
+import Data.Hashable
 
 data Arbol a = Nada | Nodo (IORef (Arbol a)) (IORef (Arbol a)) (IORef (Arbol a)) a a deriving Show
 
 instance Show (IORef a) where
     show _ = "<ioref>"
 
-caca_genera_mapa:: M.Map Int (Arbol a)
-caca_genera_mapa = M.fromList $ zip [100000000] [Nada]
+type MapaArbolinCaca s a = M.HashTable s a (Arbol a)
+type MapaArbolins s a = ST s (MapaArbolinCaca s a)
+
+caca_genera_mapa::(Ord a)=> MapaArbolins s a
+caca_genera_mapa = do
+    ht<-M.new
+    return ht
 
 insertar :: (Ord a) => Arbol a-> a -> a -> Arbol a
 insertar Nada x idx = unsafePerformIO $ do
@@ -63,11 +72,15 @@ insertar_nodo !actual@(Nodo !padre t1 t2 v idx_padre) !anterior x idx
                                                                       return nodo_nuevo
 insertar_nodo _ _ _ _ = Nada
 
-caca_construye_arbol :: (Ord a, Num a) => [a] -> Arbol a -> a ->  M.Map a (Arbol a) -> Arbol a
-caca_construye_arbol [] arbolin idx _= arbolin
-caca_construye_arbol (x:xs) !arbolin idx maputo = let ultimo=(insertar arbolin x idx)
-                                                      chiga=M.insert x ultimo maputo
-                                                      in caca_construye_arbol xs ultimo (idx+1) maputo
+caca_construye_arbol :: (Ord a, Num a, Hashable a) => [a] -> Arbol a -> a -> MapaArbolinCaca s a -> ST s (Arbol a)
+caca_construye_arbol [] arbolin idx _ = do
+    return arbolin
+caca_construye_arbol (x:xs) !arbolin idx maputo = do
+    let x_shit=(x+0)
+        ultimo=(insertar arbolin x_shit idx)
+    M.insert maputo x_shit ultimo 
+    putamierda<-caca_construye_arbol xs ultimo (idx+1) maputo
+    return putamierda
 
 encuentra_raiz :: (Ord a) => Arbol a -> Arbol a
 encuentra_raiz Nada = Nada
@@ -79,15 +92,18 @@ inorder :: (Ord c, Num c) => Arbol c -> c -> [(c,c,c)]
 inorder Nada _ = []
 inorder (Nodo _ hi hdp x idx) derp = (inorder (unsafePerformIO(readIORef(hi))) (derp+1)) ++ [(x,idx,derp)] ++ (inorder (unsafePerformIO(readIORef(hdp))) (derp+1))
 
-caca_main :: IO()
+caca_main :: ST s (Bool)
 caca_main = do
-    let maputo = caca_genera_mapa
-        ass=(caca_construye_arbol [50,8,7,45,3,56,3,335,4232,24] Nada 0 maputo)
-        raiz=encuentra_raiz ass
-    print ("ass "++(show ass)++" i la raiz "++(show raiz))
-    print ("fuc "++ (show (inorder raiz 0)))
-    let tu::(Arbol Int)=fromJust(M.lookup 0 maputo)
-    print ("wes una "++(show tu))
+    maputo<-caca_genera_mapa::(MapaArbolins s Int)
+    ass<-(caca_construye_arbol [50,8,7,45,3,56,3,335,4232,24] Nada 0 maputo)
+    let raiz=encuentra_raiz ass
+        !caca=print ("ass "++(show ass)++" i la raiz "++(show raiz))
+        !caca1= print ("fuc "++ (show (inorder raiz 0)))
+    resu_mierda<-(M.lookup 0 maputo)
+    tu::(Arbol Int)<-fromJust(resu_mierda)
+    let !caca2=print ("wes una "++(show tu))
+    return True
+
 
 main = do
     print "unas voi"

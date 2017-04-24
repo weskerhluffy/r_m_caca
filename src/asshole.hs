@@ -90,8 +90,6 @@ mierda =  runST$do
         chingadera=pero_la_puta_madre_hi arbol4
         ijadeputa=pero_la_puta_madre arbol5
 
-    let eree = case putada of True -> True
-                              False -> False
 --    let maputo=scores
 --    maputo1<-(maputo)
     aaa<-aboveThresholdST maputo 1
@@ -115,7 +113,7 @@ mierda =  runST$do
     ddd<-aboveThresholdST maputo 6
 --    ddd1 <- HT.lookup maputo "run6"
 
-    let resu=(((((aaa&&bbb)&&ccc)&&ddd) && chingadera) && putada)&&ijadeputa
+    let resu=(((((aaa&&bbb)&&ccc)&&ddd) && chingadera) )&&ijadeputa
     return resu
 
 main = do

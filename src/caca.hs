@@ -16,6 +16,7 @@ import Control.Monad
 import Data.STRef
 import qualified Data.HashTable.ST.Basic as M
 import Data.Hashable
+import Data.List
 
 data Arbol a = Nada | Nodo (IORef (Arbol a)) (IORef (Arbol a)) (IORef (Arbol a)) a a deriving Show
 
@@ -99,7 +100,7 @@ inorder :: (Ord c, Num c) => Arbol c -> c -> [(c,c,c)]
 inorder Nada _ = []
 inorder (Nodo _ hi hdp x idx) derp = (inorder (unsafePerformIO(readIORef(hi))) (derp+1)) ++ [(x,idx,derp)] ++ (inorder (unsafePerformIO(readIORef(hdp))) (derp+1))
 
-caca_main :: Arbol Int
+caca_main :: Int
 caca_main = runST$do
     !maputo<-caca_genera_mapa::(MapaArbolins s Int)
     M.insert maputo 10000 Nada
@@ -117,7 +118,8 @@ caca_main = runST$do
     let tu1::(Arbol Int)=fromJust(resu_mierda)
     let camino=camino_raiz tu
         camino1=camino_raiz tu1
-    return tu
+    let aaa=last(camino `intersect` camino1)
+    return aaa
 
 
 main = do

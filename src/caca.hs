@@ -93,24 +93,24 @@ inorder :: (Ord c, Num c) => Arbol c -> c -> [(c,c,c)]
 inorder Nada _ = []
 inorder (Nodo _ hi hdp x idx) derp = (inorder (unsafePerformIO(readIORef(hi))) (derp+1)) ++ [(x,idx,derp)] ++ (inorder (unsafePerformIO(readIORef(hdp))) (derp+1))
 
-caca_main :: ST s Bool
-caca_main = do
+caca_main :: Arbol Int
+caca_main = runST$do
     !maputo<-caca_genera_mapa::(MapaArbolins s Int)
     M.insert maputo 10000 Nada
     ass<-(caca_construye_arbol [50,8,7,45,3,56,3,335,4232,24] Nada 0 maputo)
     let raiz=encuentra_raiz ass
         !caca=print ("ass "++(show ass)++" i la raiz "++(show raiz))
         !caca1= print ("fuc "++ (show (inorder raiz 0)))
-    resu_mierda<-(M.lookup maputo 9)
+    resu_mierda<-(M.lookup maputo 3)
 --    tu::(Arbol In)<-fromJust(resu_mierda)
     let tu::(Arbol Int)=fromJust(resu_mierda)
-    let !caca2=print ("wes una "++(show tu))
-    let assbutt = case resu_mierda of Nothing -> False
-                                      Just x->True
-    return assbutt
+    let !caca2=print("wes una "++(show tu))
+    let assbutt = case tu of Nada -> False
+                             (Nodo _ _ _ _ _)->True
+    return tu
 
 
 main = do
     print "unas voi"
     let !ass=caca_main
-    print ("rick i martin "++(show (runST(ass))))
+    print ("rick i martin "++(show ((ass))))

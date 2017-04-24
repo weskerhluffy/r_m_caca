@@ -78,7 +78,8 @@ caca_construye_arbol [] arbolin idx _ = do
 caca_construye_arbol (x:xs) !arbolin idx maputo = do
     let x_shit=(x+0)
         ultimo=(insertar arbolin x_shit idx)
-    M.insert maputo x_shit ultimo 
+--    M.insert maputo x_shit ultimo 
+    M.insert maputo idx ultimo 
     putamierda<-caca_construye_arbol xs ultimo (idx+1) maputo
     return putamierda
 
@@ -92,19 +93,24 @@ inorder :: (Ord c, Num c) => Arbol c -> c -> [(c,c,c)]
 inorder Nada _ = []
 inorder (Nodo _ hi hdp x idx) derp = (inorder (unsafePerformIO(readIORef(hi))) (derp+1)) ++ [(x,idx,derp)] ++ (inorder (unsafePerformIO(readIORef(hdp))) (derp+1))
 
-caca_main :: ST s (Bool)
+caca_main :: ST s Bool
 caca_main = do
-    maputo<-caca_genera_mapa::(MapaArbolins s Int)
+    !maputo<-caca_genera_mapa::(MapaArbolins s Int)
+    M.insert maputo 10000 Nada
     ass<-(caca_construye_arbol [50,8,7,45,3,56,3,335,4232,24] Nada 0 maputo)
     let raiz=encuentra_raiz ass
         !caca=print ("ass "++(show ass)++" i la raiz "++(show raiz))
         !caca1= print ("fuc "++ (show (inorder raiz 0)))
-    resu_mierda<-(M.lookup 0 maputo)
-    tu::(Arbol Int)<-fromJust(resu_mierda)
+    resu_mierda<-(M.lookup maputo 9)
+--    tu::(Arbol In)<-fromJust(resu_mierda)
+    let tu::(Arbol Int)=fromJust(resu_mierda)
     let !caca2=print ("wes una "++(show tu))
-    return True
+    let assbutt = case resu_mierda of Nothing -> False
+                                      Just x->True
+    return assbutt
 
 
 main = do
     print "unas voi"
-    caca_main
+    let !ass=caca_main
+    print ("rick i martin "++(show (runST(ass))))

@@ -5,6 +5,8 @@
 -- XXX: http://blog.jakubarnold.cz/2014/07/20/mutable-state-in-haskell.html
 -- XXX: https://news.ycombinator.com/item?id=1831403
 -- XXX: http://stackoverflow.com/questions/8332307/show-for-io-types
+-- XXX: https://wiki.haskell.org/Haskell_IO_for_Imperative_Programmers
+-- XXX: http://stackoverflow.com/questions/8879391/how-do-i-convert-string-into-list-of-integers-in-haskell
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -101,27 +103,41 @@ inorder :: (Ord c, Num c) => Arbol c -> c -> [(c,c,c)]
 inorder Nada _ = []
 inorder (Nodo _ hi hdp x idx) derp = (inorder (unsafePerformIO(readIORef(hi))) (derp+1)) ++ [(x,idx,derp)] ++ (inorder (unsafePerformIO(readIORef(hdp))) (derp+1))
 
+convertir_monton_mierda::[String]->[[Int]]
+convertir_monton_mierda [] = []
+convertir_monton_mierda (cad:cads) =
+    case cads of []-> [(map read $ words cad:: [Int])]
+                 cads-> [(map read $ words cad:: [Int])]++(convertir_monton_mierda cads)
+
+pedazo_mierda::([Int],[[Int]])
+pedazo_mierda= unsafePerformIO $ do
+    s <- getContents
+    let mierdas=lines(s)
+        (caca:caca1:cacas)=mierdas
+        numeros=map read $ words caca1 :: [Int]
+    return (numeros,convertir_monton_mierda cacas)
+    
+
 caca_main :: Int
 caca_main = runST$do
+    let (numeros,consuls)=pedazo_mierda
     !maputo<-caca_genera_mapa::(MapaArbolins s Int)
     M.insert maputo 10000 Nada
-    ass<-(caca_construye_arbol [50,8,7,45,3,56,12,335,43,24,4232,432] Nada 0 maputo)
+    ass<-(caca_construye_arbol numeros Nada 0 maputo)
     let raiz=encuentra_raiz ass
         !caca=print ("ass "++(show ass)++" i la raiz "++(show raiz))
         !caca1= print ("fuc "++ (show (inorder raiz 0)))
-    resu_mierda<-(M.lookup maputo 6)
+    resu_mierda<-(M.lookup maputo 0)
     let tu::(Arbol Int)=fromJust(resu_mierda)
     let !caca2=print("wes una "++(show tu))
     let assbutt = case tu of Nada -> False
                              (Nodo _ _ _ _ _)->True
-    resu_mierda<-(M.lookup maputo 11)
+    resu_mierda<-(M.lookup maputo 4)
     let tu1::(Arbol Int)=fromJust(resu_mierda)
     let camino=camino_raiz tu
         camino1=camino_raiz tu1
     let aaa=last(camino `intersect` camino1)
     return aaa
-
-
 
 main = do
     print "unas voi"

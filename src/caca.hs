@@ -142,7 +142,5 @@ caca_main = runST$do
     return cagadas
 
 main = do
-    print "unas voi"
     let !ass=caca_main
-    print ("rick i martin "++(show ((ass))))
     mapM_ print ass

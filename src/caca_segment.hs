@@ -63,15 +63,22 @@ consulta_caca_segmentos_core nodo_act@(Node val hi hdp) limite_izq limite_der id
                   in (min val_izq val_der)
 consulta_caca_segmentos_core _ _ _ _ _ = 100000
 
+consulta_caca :: Tree Int->Int->[[Int]]->[Int]
+consulta_caca raiz _ [] = []
+consulta_caca raiz num_nums (consul:consuls) =
+    let (inicio:final:_)=consul
+        rick=consulta_caca_segmentos_core raiz inicio final 0 (num_nums-1)
+        resul_par=(consulta_caca raiz num_nums consuls)
+    in ([rick]++resul_par)
+
 caca_main :: [Int]
 caca_main = unsafePerformIO $ do
     let (numeros,consuls)=pedazo_mierda
         num_nums=length numeros
         ass=(caca_construye_arbol_segmentos numeros num_nums 0 (num_nums-1))
     print("rikolina "++(show ass))
-    let mierda=consulta_caca_segmentos_core ass 4 6 0 (num_nums-1)
---    cagadas<-consulta_caca maputo consuls 
-    return [mierda]
+    let cagadas=consulta_caca ass num_nums consuls
+    return cagadas
 
 main = do
     let !ass=caca_main

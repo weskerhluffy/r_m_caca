@@ -118,28 +118,31 @@ pedazo_mierda= unsafePerformIO $ do
     return (numeros,convertir_monton_mierda cacas)
     
 
-caca_main :: Int
+consulta_caca :: MapaArbolinCaca s Int->[[Int]]->ST s [Int]
+consulta_caca maputo [] = do return []
+consulta_caca maputo (consul:consuls) = do
+    let (inicio:final:_)=consul
+    resu_mierda<-(M.lookup maputo inicio)
+    resu_mierda1<-(M.lookup maputo final)
+    let tu::(Arbol Int)=fromJust(resu_mierda)
+        tu1::(Arbol Int)=fromJust(resu_mierda1)
+        camino=camino_raiz tu
+        camino1=camino_raiz tu1
+        aaa=last(camino `intersect` camino1)
+        result=[aaa]
+    resul_par<-(consulta_caca maputo consuls)
+    return (result++resul_par)
+
+caca_main :: [Int]
 caca_main = runST$do
     let (numeros,consuls)=pedazo_mierda
     !maputo<-caca_genera_mapa::(MapaArbolins s Int)
-    M.insert maputo 10000 Nada
     ass<-(caca_construye_arbol numeros Nada 0 maputo)
-    let raiz=encuentra_raiz ass
-        !caca=print ("ass "++(show ass)++" i la raiz "++(show raiz))
-        !caca1= print ("fuc "++ (show (inorder raiz 0)))
-    resu_mierda<-(M.lookup maputo 0)
-    let tu::(Arbol Int)=fromJust(resu_mierda)
-    let !caca2=print("wes una "++(show tu))
-    let assbutt = case tu of Nada -> False
-                             (Nodo _ _ _ _ _)->True
-    resu_mierda<-(M.lookup maputo 4)
-    let tu1::(Arbol Int)=fromJust(resu_mierda)
-    let camino=camino_raiz tu
-        camino1=camino_raiz tu1
-    let aaa=last(camino `intersect` camino1)
-    return aaa
+    cagadas<-consulta_caca maputo consuls
+    return cagadas
 
 main = do
     print "unas voi"
     let !ass=caca_main
     print ("rick i martin "++(show ((ass))))
+    mapM_ print ass

@@ -34,3 +34,5 @@ src/caca_segment
 src/shit
 
 *.prof
+
+src/adios

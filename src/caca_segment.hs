@@ -17,6 +17,8 @@ import Control.Monad.ST
 import Control.Monad
 import Data.STRef
 import Data.List
+import qualified Data.HashTable.ST.Basic as M
+import Data.Hashable
 
 data Tree a = Nil | Node Int (Tree Int) (Tree Int) deriving Eq
 
@@ -24,6 +26,8 @@ instance Show (Tree a) where
     show Nil= ""
     show (Node val hi hdp) =" "++(if hi==Nil then "" else show hi)++":" ++ (show val)++":"++(if hi==Nil then "" else show hdp)++" "
 
+type MapaArbolinCaca s a= M.HashTable s (Int,Int) a
+type MapaArbolins s a = ST s (MapaArbolinCaca s a)
                                                                       
 convertir_monton_mierda::[String]->[[Int]]
 convertir_monton_mierda [] = []
@@ -52,32 +56,41 @@ caca_construye_arbol_segmentos nums num_nums limite_izq limite_der
                       caca_val=(min hi_val hdp_val)
                   in (Node caca_val hi hdp)
 
-consulta_caca_segmentos_core :: Tree Int->Int->Int->Int->Int->Int
-consulta_caca_segmentos_core nodo_act@(Node val hi hdp) limite_izq limite_der idx_izq idx_der
-    | limite_izq > idx_der = 100000
-    | limite_der < idx_izq = 100000
-    | limite_izq <= idx_izq && limite_der >= idx_der = val
-    | otherwise = let idx_med=idx_izq+((idx_der-idx_izq) `quot` 2)
-                      val_izq=consulta_caca_segmentos_core hi  limite_izq limite_der idx_izq idx_med
-                      val_der=consulta_caca_segmentos_core hdp limite_izq limite_der (idx_med+1) idx_der
-                  in (min val_izq val_der)
-consulta_caca_segmentos_core _ _ _ _ _ = 100000
+busca_cachete:: MapaArbolinCaca s Int -> (Int,Int)-> ST s Int
+busca_cachete maputo intervalo = do
+    cagada<-M.lookup maputo intervalo 
+    let anal=case cagada of Nothing->100000
+                            Just x->x
+    return anal
 
-consulta_caca :: Tree Int->Int->[[Int]]->[Int]
-consulta_caca raiz _ [] = []
-consulta_caca raiz num_nums (consul:consuls) =
+consulta_caca_segmentos_core :: MapaArbolinCaca s Int -> Tree Int->Int->Int->Int->Int-> ST s Int
+consulta_caca_segmentos_core maputo nodo_act@(Node val hi hdp) limite_izq limite_der idx_izq idx_der
+    | limite_izq > idx_der = do return 100000
+    | limite_der < idx_izq = do return 100000
+    | limite_izq <= idx_izq && limite_der >= idx_der = do return val
+    | otherwise = do cachete<-busca_cachete maputo (idx_izq,idx_der)
+                     case cachete of 100000 -> do let idx_med=idx_izq+((idx_der-idx_izq) `quot` 2)
+                                                  val_izq<-(consulta_caca_segmentos_core maputo hi  limite_izq limite_der idx_izq idx_med)
+                                                  val_der<-(consulta_caca_segmentos_core maputo hdp limite_izq limite_der (idx_med+1) idx_der)
+                                                  return (min val_izq val_der)
+                                     cachete -> do return cachete
+consulta_caca_segmentos_core _ _ _ _ _ _ = do return 100000
+
+consulta_caca ::MapaArbolinCaca s Int-> Tree Int->Int->[[Int]]->ST s ([Int])
+consulta_caca maputo raiz _ [] = do return []
+consulta_caca maputo raiz num_nums (consul:consuls) = do
     let (inicio:final:_)=consul
-        rick=consulta_caca_segmentos_core raiz inicio final 0 (num_nums-1)
-        resul_par=(consulta_caca raiz num_nums consuls)
-    in ([rick]++resul_par)
+    rick<-consulta_caca_segmentos_core maputo raiz inicio final 0 (num_nums-1)
+    resul_par<-(consulta_caca maputo raiz num_nums consuls)
+    return ([rick]++resul_par)
 
 caca_main :: [Int]
-caca_main = unsafePerformIO $ do
+caca_main = runST $ do
+    ht<-M.new
     let (numeros,consuls)=pedazo_mierda
         num_nums=length numeros
         ass=(caca_construye_arbol_segmentos numeros num_nums 0 (num_nums-1))
-    print("rikolina "++(show ass))
-    let cagadas=consulta_caca ass num_nums consuls
+    cagadas<-consulta_caca ht ass num_nums consuls
     return cagadas
 
 main = do

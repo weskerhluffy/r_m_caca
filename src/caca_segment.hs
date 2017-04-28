@@ -16,9 +16,9 @@ import Data.Maybe
 import Control.Monad.ST
 import Control.Monad
 import Data.STRef
-import Data.List
 import qualified Data.HashTable.ST.Basic as M
 import Data.Hashable
+import qualified Data.Vector as Verga
 
 data Tree a = Nil | Node Int (Tree Int) (Tree Int) deriving Eq
 
@@ -44,9 +44,9 @@ pedazo_mierda= unsafePerformIO $ do
     return (numeros,convertir_monton_mierda cacas)
     
 
-caca_construye_arbol_segmentos::(Ord Int) => [Int]->Int->Int->Int->Tree Int
+caca_construye_arbol_segmentos::(Ord Int) => Verga.Vector Int->Int->Int->Int->Tree Int
 caca_construye_arbol_segmentos nums num_nums limite_izq limite_der
-    | limite_izq == limite_der = let valor = if limite_izq < num_nums then (nums!!limite_izq) else 100000
+    | limite_izq == limite_der = let valor = if limite_izq < num_nums then (nums Verga.! limite_izq) else 100000
                                  in (Node valor Nil Nil)
     | otherwise = let limite_med=limite_izq+((limite_der-limite_izq) `quot` 2)
                       hi=(caca_construye_arbol_segmentos nums num_nums limite_izq limite_med)
@@ -87,8 +87,9 @@ consulta_caca maputo raiz num_nums (consul:consuls) = do
 caca_main :: [Int]
 caca_main = runST $ do
     ht<-M.new
-    let (numeros,consuls)=pedazo_mierda
+    let (numeros_shit,consuls)=pedazo_mierda
         num_nums=length numeros
+        numeros=Verga.fromList numeros_shit
         ass=(caca_construye_arbol_segmentos numeros num_nums 0 (num_nums-1))
     cagadas<-consulta_caca ht ass num_nums consuls
     return cagadas

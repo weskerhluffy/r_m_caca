@@ -93,11 +93,11 @@ encuentra_raiz !actual@(Nodo padre _ _ x idx) = let padre_cont = unsafePerformIO
                                                 in case padre_cont of Nada -> actual
                                                                       padre_cont ->encuentra_raiz padre_cont
                                                                       
-camino_raiz:: (Ord a) => Arbol a -> [a]
+camino_raiz:: (Ord a) => Arbol a -> [(a,a)]
 camino_raiz Nada = [] 
 camino_raiz !actual@(Nodo padre _ _ x idx) = let padre_cont = unsafePerformIO(readIORef(padre))
-                                                in case padre_cont of Nada -> [x]
-                                                                      padre_cont ->(camino_raiz padre_cont)++[x]
+                                                in case padre_cont of Nada -> [(x,idx)]
+                                                                      padre_cont ->(camino_raiz padre_cont)++[(x,idx)]
 
 inorder :: (Ord c, Num c) => Arbol c -> c -> [(c,c,c)]
 inorder Nada _ = []
@@ -128,7 +128,8 @@ consulta_caca maputo (consul:consuls) = do
         tu1::(Arbol Int)=fromJust(resu_mierda1)
         camino=camino_raiz tu
         camino1=camino_raiz tu1
-        aaa=last(camino `intersect` camino1)
+        aaa_tupla=last(camino `intersect` camino1)
+        (aaa,_)=aaa_tupla
         result=[aaa]
     resul_par<-(consulta_caca maputo consuls)
     return (result++resul_par)
